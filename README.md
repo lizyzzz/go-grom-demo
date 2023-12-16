@@ -490,4 +490,250 @@ func One2MoreDelete() {
 ```
 
 ### 一对一关系
+```Go
+/*
+一对一关系比较少，一般用于表的扩展
+
+例如一张用户表，有很多字段
+
+那么就可以把它拆分为两张表，常用的字段放主表，不常用的字段放详情表
+*/
+
+type People struct {
+	ID         uint
+	Name       string
+	Age        int
+	Gender     bool
+	PeopleInfo PeopleInfo // 通过UserInfo可以拿到用户详情信息
+}
+
+type PeopleInfo struct {
+	PeopleID uint // 外键
+	ID       uint
+	Addr     string
+	Like     string
+}
+
+// 创建关联表
+func One2OneCreateTable() {
+	DB.AutoMigrate(&People{}, &PeopleInfo{})
+}
+
+// 一对一添加
+func One2OneInsertTable() {
+	DB = DB.Session(&gorm.Session{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
+
+	// 新增一个用户
+	DB.Create([]*People{
+		{
+			Name:   "资源",
+			Age:    25,
+			Gender: true,
+			PeopleInfo: PeopleInfo{
+				Addr: "湖南",
+				Like: "code",
+			},
+		},
+		{
+			Name:       "自愿",
+			Age:        24,
+			Gender:     false,
+			PeopleInfo: PeopleInfo{},
+		},
+	})
+
+	// 新增附加信息
+	DB.Create(&PeopleInfo{
+		PeopleID: 2,
+		Addr:     "南京市",
+		Like:     "吃饭",
+	})
+
+}
+
+// 一对一的查询
+func One2OneQuery() {
+	var user People
+	DB.Preload("PeopleInfo").Take(&user)
+	fmt.Println(user)
+}
+
+// 一对一的删除
+func One2OneDelete() {
+	var p People
+	DB.Take(&p, 1)
+	DB.Select("PeopleInfo").Delete(&p)
+}
+```
+
+
+### 多对多关系
+#### 多对多的创建
+```Go
+/*
+需要用第三张表存储两张表的关系
+*/
+
+// 不同的文章有不同的标签
+
+type Tag struct {
+	ID     uint
+	Name   string
+	Papers []Paper `gorm:"many2many:article_tags;"` // 用于反向引用
+}
+
+type Paper struct {
+	ID    uint
+	Title string
+	Tags  []Tag `gorm:"many2many:article_tags;"` // article_tags 是第三张表的名称
+}
+
+// article_tags 对应 ArticleTags, 以大写对应 `_`
+type ArticleTags struct {
+	PaperID   uint `gorm:"primaryKey"`
+	TagID     uint `gorm:"primaryKey"`
+	CreatedAt time.Time
+}
+
+// 多对多创建表
+func More2MoreCreateTable() {
+	DB.AutoMigrate(&Tag{}, &Paper{})
+}
+```
+#### 多对多的添加
+```Go
+// 多对多添加
+func More2MoreInsertTable() {
+	DB = DB.Session(&gorm.Session{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
+
+	// 1. 添加文章, 并创建标签
+	DB.Create(&Paper{
+		Title: "python基础课程",
+		Tags: []Tag{
+			{Name: "python"},
+			{Name: "基础课程"},
+		},
+	})
+
+	// 2. 添加文章, 选择标签
+	var tags []Tag
+	DB.Find(&tags, "name = ?", "基础课程")
+	DB.Create(&Paper{
+		Title: "golang基础",
+		Tags:  tags,
+	})
+}
+```
+#### 多对多的查询
+```Go
+// 多对多查询
+func More2MoreQuery() {
+	DB = DB.Session(&gorm.Session{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
+
+	// 1. 查询文章, 显示文章的标签列表
+	var paper Paper
+	DB.Preload("Tags").Take(&paper, 1)
+	fmt.Println(paper)
+
+	// 2. 查询标签, 显示文章列表
+	var tag Tag
+	DB.Preload("Papers").Take(&tag, 2)
+	fmt.Println(tag)
+}
+```
+#### 多对多的更新和删除
+```Go
+// 多对多更新
+func More2MoreUpdate() {
+	DB = DB.Session(&gorm.Session{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
+	// 1. 移除文章的标签
+	var paper Paper
+	DB.Preload("Tags").Take(&paper, 1)
+	DB.Model(&paper).Association("Tags").Delete(paper.Tags)
+	fmt.Println(paper)
+	// 2. 更新文章的标签
+	var p Paper
+	var tags []Tag
+	DB.Find(&tags, []int{2, 6, 7})
+
+	DB.Preload("Tags").Take(&p, 2)
+	DB.Model(&paper).Association("Tags").Replace(tags)
+	fmt.Println(p)
+}
+
+// 多对多的删除
+func More2MoreDelete() {
+	var paper Paper
+	DB.Take(&paper, 1)
+	DB.Select("Tags").Delete(&paper)
+}
+```
+#### 多对多自定义连接表
+```Go
+// 自定义连接表
+func DefineConnTable() {
+	DB.SetupJoinTable(&Paper{}, "Tags", &ArticleTags{}) // 设置新的连接表(因为两个类都有反向引用)
+	DB.SetupJoinTable(&Tag{}, "Papers", &ArticleTags{}) // 设置新的连接表
+	DB.AutoMigrate(&Paper{}, &Tag{}, &ArticleTags{})
+}
+
+// 自定义连接表的操作
+func UserDefinedConnTableOP() {
+	DB = DB.Session(&gorm.Session{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
+
+	// 1. 添加文章并添加标签, 并自动关联
+	DB.SetupJoinTable(&Paper{}, "Tags", &ArticleTags{}) // 要设置这个，才能走到我们自定义的连接表
+	DB.SetupJoinTable(&Tag{}, "Papers", &ArticleTags{}) // 要设置这个，才能走到我们自定义的连接表
+	DB.Create(&Paper{
+		Title: "flask零基础入门",
+		Tags: []Tag{
+			{Name: "python"},
+			{Name: "后端"},
+			{Name: "web"},
+		},
+	})
+	// CreatedAt time.Time 由于我们设置的是CreatedAt，gorm会自动填充当前时间，
+	// 如果是其他的字段，需要使用到ArticleTag 的添加钩子 BeforeCreate
+
+	// 2. 添加文章，关联已有标签
+	var tags []Tag
+	DB.Find(&tags, "name in ?", []string{"python", "web"})
+	DB.Create(&Paper{
+		Title: "flask请求对象",
+		Tags:  tags,
+	})
+
+	// 3. 给已有文章关联标签
+	paper := Paper{
+		Title: "django基础",
+	}
+	DB.Create(&paper)
+	var at Paper
+	tags = []Tag{}
+	DB.Find(&tags, "name in ?", []string{"python", "web"})
+	DB.Take(&at, paper.ID).Association("Tags").Append(tags)
+
+	// 4. 替换已有文章的标签
+	var p Paper
+	tags = []Tag{}
+	DB.Find(&tags, "name in ?", []string{"后端"})
+	DB.Take(&p, "title = ?", "django基础")
+	DB.Model(&p).Association("Tags").Replace(tags)
+
+	// 5. 查询文章列表，显示标签
+	var papers []Paper
+	DB.Preload("Tags").Find(&papers)
+	fmt.Println(papers)
+}
+```
 

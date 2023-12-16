@@ -29,6 +29,13 @@ func main() {
 	// gormdemo.One2OneCreateTable()
 	// gormdemo.One2OneInsertTable()
 	// gormdemo.One2OneQuery()
-	gormdemo.One2OneDelete()
+	// gormdemo.One2OneDelete()
 
+	// gormdemo.More2MoreCreateTable()
+	// gormdemo.More2MoreInsertTable()
+	// gormdemo.More2MoreQuery()
+	// gormdemo.More2MoreUpdate()
+	// gormdemo.More2MoreDelete()
+	gormdemo.DefineConnTable()
+	gormdemo.UserDefinedConnTableOP()
 }
