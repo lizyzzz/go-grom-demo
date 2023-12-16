@@ -12,6 +12,12 @@ type User struct {
 
 func main() {
 	sqldemo.SqlDemo()
-	gormdemo.CreateTable()
-	gormdemo.Connect()
+	// gormdemo.CreateTable()
+	// gormdemo.InsertTable()
+	// gormdemo.QueryTable()
+	// gormdemo.UpdateTable()
+	// gormdemo.DeleteTable()
+	// gormdemo.TestHook()
+	// gormdemo.PrepareData()
+	gormdemo.AdvancedQuery()
 }
