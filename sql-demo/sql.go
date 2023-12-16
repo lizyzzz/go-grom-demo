@@ -22,7 +22,7 @@ func SqlDemo() {
 
 	// 返回值只有一行的查询
 	id := 1
-	row := db.QueryRowContext(context.Background(), "SELECT username, password FROM user WHERE id = ?;", id)
+	row := db.QueryRowContext(context.Background(), "SELECT username, password FROM webuser WHERE id = ?;", id)
 	if row.Err() != nil {
 		if row.Err() == sql.ErrNoRows {
 			fmt.Println(row.Err())
@@ -39,7 +39,7 @@ func SqlDemo() {
 	fmt.Println(user)
 
 	// 返回值有多行的查询
-	rows, err := db.QueryContext(context.Background(), "SELECT * FROM user;")
+	rows, err := db.QueryContext(context.Background(), "SELECT * FROM webuser;")
 	if err != nil {
 		if err == sql.ErrNoRows {
 			fmt.Println(err)

@@ -269,7 +269,7 @@ func DeleteTable() {
 }
 
 // 高级查询
-type User struct {
+type Person struct {
 	Name2 string `gorm:"column:name"`
 	Age   int
 }
@@ -326,7 +326,7 @@ func AdvancedQuery() {
 	fmt.Println(users)
 
 	// 指定到另一个结构体
-	var u []User
+	var u []Person
 	DB.Select("name", "age").Find(&users).Scan(&u) // 查询两次(Find查找一次, Scan 查找一次), 去掉 Find 不行, 因为不知道表名
 	fmt.Println(u)
 
