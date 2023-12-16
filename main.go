@@ -28,6 +28,7 @@ func main() {
 
 	// gormdemo.One2OneCreateTable()
 	// gormdemo.One2OneInsertTable()
-	gormdemo.One2OneQuery()
+	// gormdemo.One2OneQuery()
+	gormdemo.One2OneDelete()
 
 }

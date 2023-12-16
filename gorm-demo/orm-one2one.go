@@ -69,8 +69,16 @@ func One2OneInsertTable() {
 
 }
 
+// 一对多的查询
 func One2OneQuery() {
 	var user People
 	DB.Preload("PeopleInfo").Take(&user)
 	fmt.Println(user)
+}
+
+// 一对多的删除
+func One2OneDelete() {
+	var p People
+	DB.Take(&p, 1)
+	DB.Select("PeopleInfo").Delete(&p)
 }
