@@ -359,7 +359,7 @@ func Age23(db *gorm.DB) *gorm.DB {
 }
 ```
 
-### 一对多
+### 一对多关系
 #### 一对多的创建
 ```Go
 type User struct {
@@ -488,3 +488,6 @@ func One2MoreDelete() {
 	DB.Model(&user).Association("Articles").Delete(&user.Articles)
 }
 ```
+
+### 一对一关系
+

@@ -20,8 +20,14 @@ func main() {
 	// gormdemo.TestHook()
 	// gormdemo.PrepareData()
 	// gormdemo.AdvancedQuery()
-	gormdemo.One2MoreCreateTable()
-	gormdemo.One2MoreInsertTable()
+
+	// gormdemo.One2MoreCreateTable()
+	// gormdemo.One2MoreInsertTable()
 	// gormdemo.One2MoreQuery()
 	// gormdemo.One2MoreDelete()
+
+	// gormdemo.One2OneCreateTable()
+	// gormdemo.One2OneInsertTable()
+	gormdemo.One2OneQuery()
+
 }
