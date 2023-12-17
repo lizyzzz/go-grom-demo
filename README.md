@@ -1,7 +1,7 @@
 # go-gorm-demo
 go-grom 框架学习
 
-### gorm 连接 与 连接配置
+### 1. gorm 连接 与 连接配置
 需要下载mysql的驱动
 ```bash
 go get gorm.io/driver/mysql
@@ -23,7 +23,7 @@ db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 })
 ```
 
-### 模型(相当于可以在创建表的时候指定字段属性)
+### 2. 模型(相当于可以在创建表的时候指定字段属性)
 * `type` 定义字段类型  
 * `size` 定义字段大小  
 * `column` 自定义列名  
@@ -35,8 +35,8 @@ db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 * `embeddedPrefix` 嵌套字段前缀  
 * `comment` 注释  
 * **多个标签之前用 ; 连接**  
-
-### 单表插入
+### 3. 单表操作
+#### 3.1 单表插入
 ```Go
 func InsertTable() {
 	// 添加记录
@@ -73,7 +73,7 @@ func InsertTable() {
 }
 ```
 
-### 单表查询
+#### 3.2 单表查询
 ```Go
 // 单表查询
 func QueryTable() {
@@ -147,7 +147,7 @@ func QueryTable() {
 }
 ```
 
-### 单表更新
+#### 3.3 单表更新
 ```Go
 // 单表更新
 func UpdateTable() {
@@ -197,7 +197,7 @@ func UpdateTable() {
 }
 ```
 
-### 单表删除
+#### 3.4 单表删除
 ```Go
 func DeleteTable() {
 	student := Student{
@@ -213,7 +213,7 @@ func DeleteTable() {
 }
 ```
 
-### 触发器
+### 4. 触发器
 ```Go
 // 触发器
 func (user *Student) BeforeCreate(tx *gorm.DB) error {
@@ -231,7 +231,7 @@ func TestHook() {
 }
 ```
 
-### 高级查询
+### 5. 高级查询
 ```Go
 // 高级查询
 type User struct {
@@ -359,8 +359,8 @@ func Age23(db *gorm.DB) *gorm.DB {
 }
 ```
 
-### 一对多关系
-#### 一对多的创建
+### 6. 一对多关系
+#### 6.1 一对多的创建
 ```Go
 type User struct {
 	ID       uint      `gorm:"size:4"`
@@ -379,7 +379,7 @@ func One2MoreCreateTable() {
 	DB.AutoMigrate(&User{}, &Article{})
 }
 ```
-#### 一对多的添加
+#### 6.2 一对多的添加
 ```Go
 // 一对多添加
 func One2MoreInsertTable() {
@@ -425,7 +425,7 @@ func One2MoreInsertTable() {
 	DB.Model(&article).Association("User").Append(&u)
 }
 ```
-#### 一对多的查询
+#### 6.3 一对多的查询
 ```Go
 // 一对多查询
 func One2MoreQuery() {
@@ -469,7 +469,7 @@ func One2MoreQuery() {
 	fmt.Println(user)
 }
 ```
-#### 一对多的删除
+#### 6.4 一对多的删除
 ```Go
 // 一对多删除
 func One2MoreDelete() {
@@ -489,7 +489,7 @@ func One2MoreDelete() {
 }
 ```
 
-### 一对一关系
+### 7. 一对一关系
 ```Go
 /*
 一对一关系比较少，一般用于表的扩展
@@ -569,8 +569,8 @@ func One2OneDelete() {
 ```
 
 
-### 多对多关系
-#### 多对多的创建
+### 8. 多对多关系
+#### 8.1 多对多的创建
 ```Go
 /*
 需要用第三张表存储两张表的关系
@@ -602,7 +602,7 @@ func More2MoreCreateTable() {
 	DB.AutoMigrate(&Tag{}, &Paper{})
 }
 ```
-#### 多对多的添加
+#### 8.2 多对多的添加
 ```Go
 // 多对多添加
 func More2MoreInsertTable() {
@@ -628,7 +628,7 @@ func More2MoreInsertTable() {
 	})
 }
 ```
-#### 多对多的查询
+#### 8.3 多对多的查询
 ```Go
 // 多对多查询
 func More2MoreQuery() {
@@ -647,7 +647,7 @@ func More2MoreQuery() {
 	fmt.Println(tag)
 }
 ```
-#### 多对多的更新和删除
+#### 8.4 多对多的更新和删除
 ```Go
 // 多对多更新
 func More2MoreUpdate() {
@@ -676,7 +676,7 @@ func More2MoreDelete() {
 	DB.Select("Tags").Delete(&paper)
 }
 ```
-#### 多对多自定义连接表
+#### 8.5 多对多自定义连接表
 ```Go
 // 自定义连接表
 func DefineConnTable() {
@@ -737,7 +737,7 @@ func UserDefinedConnTableOP() {
 }
 ```
 
-#### 多对多直接操作连接表
+#### 8.6 多对多直接操作连接表
 ```Go
 // 直接操作连接表
 type UserModel struct {
@@ -785,7 +785,7 @@ func QueryJoinTable() {
 }
 ```
 
-### 自定义数据类型
+### 9. 自定义数据类型
 ```Go
 // 自定义数据类型需要实现 Scan 和 Value 接口
 
@@ -842,7 +842,7 @@ func CreateUserDataTable() {
 }
 ```
 
-### 事务
+### 10. 事务
 ```Go
 type Consumer struct {
 	ID    uint   `json:"id"`
