@@ -40,5 +40,8 @@ func main() {
 	// gormdemo.UserDefinedConnTableOP()
 
 	// gormdemo.QueryJoinTable()
-	gormdemo.CreateUserDataTable()
+	// gormdemo.CreateUserDataTable()
+
+	gormdemo.CreateTxTable()
+	gormdemo.TxExample()
 }

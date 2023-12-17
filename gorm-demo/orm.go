@@ -30,7 +30,7 @@ func init() {
 
 	// 连接 mysql
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		SkipDefaultTransaction: true, // 跳过事务
+		// SkipDefaultTransaction: true, // 跳过事务
 		NamingStrategy: schema.NamingStrategy{ // 命名策略
 			// TablePrefix:   "f_",  // 表格命名前缀
 			SingularTable: true,  // 是否单数表名(不要小写)
