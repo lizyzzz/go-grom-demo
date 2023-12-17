@@ -36,6 +36,8 @@ func main() {
 	// gormdemo.More2MoreQuery()
 	// gormdemo.More2MoreUpdate()
 	// gormdemo.More2MoreDelete()
-	gormdemo.DefineConnTable()
-	gormdemo.UserDefinedConnTableOP()
+	// gormdemo.DefineConnTable()
+	// gormdemo.UserDefinedConnTableOP()
+
+	gormdemo.QueryJoinTable()
 }

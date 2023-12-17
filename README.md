@@ -737,3 +737,51 @@ func UserDefinedConnTableOP() {
 }
 ```
 
+#### 多对多直接操作连接表
+```Go
+// 直接操作连接表
+type UserModel struct {
+	ID       uint
+	Name     string
+	Collects []ArticleModel `gorm:"many2many:user_collect_models;joinForeignKey:UserID;JoinReferences:ArticleID"`
+}
+
+type ArticleModel struct {
+	ID    uint
+	Title string
+}
+
+// UserCollectModel 用户收藏文章表
+type UserCollectModels struct {
+	UserID       uint         `gorm:"primaryKey"` // article_id
+	UserModel    UserModel    `gorm:"foreignKey:UserID"`
+	ArticleID    uint         `gorm:"primaryKey"` // tag_id
+	ArticleModel ArticleModel `gorm:"foreignKey:ArticleID"`
+	CreatedAt    time.Time
+}
+
+func QueryJoinTable() {
+	DB.SetupJoinTable(&UserModel{}, "Collects", &UserCollectModels{}) // 设置新的连接表(因为两个类都有反向引用)
+	DB.AutoMigrate(&UserModel{}, &ArticleModel{}, &UserCollectModels{})
+
+	DB.Create(&UserModel{
+		Name: "资源",
+		Collects: []ArticleModel{
+			{Title: "python"},
+			{Title: "基础课程"},
+		},
+	})
+
+	var collects []UserCollectModels
+
+	var user UserModel
+	DB.Take(&user, "name = ?", "资源")
+	// 这里用map的原因是如果没查到，那就会查0值，如果是struct，则会忽略零值，全部查询
+	DB.Preload("UserModel").Preload("ArticleModel").Where(map[string]any{"user_id": user.ID}).Find(&collects)
+
+	for _, collect := range collects {
+		fmt.Println(collect)
+	}
+}
+```
+
